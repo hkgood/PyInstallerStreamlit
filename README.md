@@ -1,30 +1,30 @@
-# Streamlit to Executable
+# 将 Streamlit 转换为可执行文件
 #### [Tutorial](https://youtu.be/G7Qeg_rbYM8)
 
-## Create a Virtual Environment
+## 创建虚拟环境
 
 ```bash
 pyenv virtualenv <version> .<env-name>
-# or
+# 或者
 python -m venv .<env-name>
-# THE DOT IS IMPORTANT!
+# .点号很重要！
 ```
 
-# Activate the Virtual Environment
+# 激活虚拟环境
 
 ```bash
 pyenv activate <env-name>
-# or
+# 或者
 .<env-name>\\Scripts\\activate.bat
 ```
 
-# Verify the Virtual Environment
+# 验证虚拟环境
 
 ```bash
 python --version
 ```
 
-# Deactivate the Virtual Environment
+# 停用虚拟环境
 
 ```bash
 pyenv deactivate
@@ -32,26 +32,26 @@ pyenv deactivate
 .<env-name>\\Scripts\\deactivate.bat
 ```
 
-# Install Streamlit and Other Required Libraries
+# 安装 Streamlit 和其他依赖库
 
 ```bash
-# You can use the latest version
+# 你可以使用最新版本
 pip install streamlit pyinstaller
 ```
 
-# Add the Main File (app.py)
+# 添加主文件 (app.py)
 
 ```bash
 echo > app.py
 ```
 
-# Create an Entry Point for the Executable (run_app.py)
+# 为可执行文件创建启动文件 (run_app.py)
 
 ```bash
 echo > run_app.py
 ```
 
-# Add Content to Your Files
+# 向文件中添加内容
 
 - app.py:
 
@@ -67,18 +67,18 @@ if __name__ == '__main__':
 ```python
 from streamlit.web import cli
 
-# This import path depends on your Streamlit version
+# 这个导入路径取决于你的 Streamlit 版本
 if __name__ == '__main__':
     cli._main_run_clExplicit('app.py', args=['run'])
-    # We will CREATE this function inside our Streamlit framework
+    # 我们将在我们的 Streamlit 框架中创建这个函数
 
 ```
 
-# Navigate to the Streamlit Path
+# 导航到 Streamlit 路径
 
-In the version we are using, it is located at: `.env\Lib\site-packages\streamlit\web\cli.py`
+在我们使用的版本中，它位于: `.env\Lib\site-packages\streamlit\web\cli.py`
 
-# Add the Magic Function
+# 添加函数
 ```python
 # ... def main(log_level="info"):
 # [...]
@@ -90,7 +90,7 @@ def _main_run_clExplicit(file, is_hello, args=[], flag_options={}):
 # ...    main()
 ```
 
-# Create a Hook to Get Streamlit Metadata
+# 创建一个获取 Streamlit 元数据的钩子
 
 - .\hooks\hook-streamlit.py
 ```python
@@ -99,21 +99,20 @@ from PyInstaller.utils.hooks import copy_metadata
 datas = copy_metadata('streamlit')
 ```
 
-# Compile the App
-Run the following command to create the first run_app.spec file. 
-Note that if you are using auto-py-to-exe, you can't edit spec files here; 
-you should edit them from the interface in the advanced options.
+# 编译应用程序
+运行以下命令来创建第一个 run_app.spec 文件。
+注意，如果你使用 auto-py-to-exe，你不能在这里编辑 spec 文件；你应该在高级选项的界面中编辑它们。
 
 ```bash
 pyinstaller --onefile --additional-hooks-dir=./hooks run_app.py --clean
-# --onefile: Create a single output file
-# --clean: Delete cache and remove temporary files before building
-# --additional-hooks-dir: An additional path to search for hooks. This option can be used multiple times.
+# --onefile: 创建一个输出文件
+# --clean: 在构建之前删除缓存和临时文件
+# --additional-hooks-dir: 一个用于搜索钩子的附加路径。此选项可以多次使用。
 ```
 
-# Create Streamlit Configuration Files
+# 创建 Streamlit 配置文件
 
-You can add these files to your project's root and the output folder, or just the output folder.
+你可以将这些文件添加到项目的根目录和输出文件夹，或者只添加到输出文件夹。
 
 - .streamlit\config.toml
 ```bash
@@ -124,18 +123,18 @@ developmentMode = false
 port = 8502
 ```
 
-# Copy the Configuration Files to the Output Folder
+# 将配置文件复制到输出文件夹
 ```bash
 xcopy /s /e .streamlit output/.streamlit
-# Select D = directory
+# 选择 D = 目录
 ```
 
-# Copy app.py to the Output Folder
+# 将 app.py 复制到输出文件夹
 ```bash
 copy app.py output/app.py
 ```
 
-# Add the Data to the New Hook in run_app.spec
+# 将数据添加到 run_app.spec 中的新钩子
 ```python
 ...
 a = Analysis(
@@ -153,25 +152,25 @@ a = Analysis(
 ...
 
 ```
-# Notes
+# 注意事项
 ```python
 # 
-# this path pair should be in that way
-# but I believe it is because we add the tuple as this templete
+# 这个路径对应该以这种方式
+# 但我相信这是因为我们将元组添加为模板
 # (absolut_path, parent_path)
-# so for files that is in the root of `Lib/site-packages` 
-# We can add only the dot as parent 
-# i.e: (".envir/Lib/site-packages/wmi.py",".")
-# for folders the behaviour is the same
+# 因此对于 `Lib/site-packages` 根目录中的文件
+# 我们只需添加点作为父目录
+# 即: (".envir/Lib/site-packages/wmi.py",".")
+# 对于文件夹，行为相同
 ```
 
-# Build the Executable
+# 构建可执行文件
 
 ```bash
 pyinstaller run_app.spec --clean
 ```
 
-## 🎈 It's done! run your run_app.exe file and see the magic 🪄
+## 🎈  完成了！运行你的 run_app.exe 文件并见证魔法🪄
 
-<pre>Huge Thanks To: hmasdev<pre>
-<pre>I'm organizing the solution from <a href="https://discuss.streamlit.io/t/using-pyinstaller-or-similar-to-create-an-executable/902/18"> hmasdev in the Streamlit Forum</a></pre>
+<pre>非常感谢: hmasdev<pre>
+<pre>我正在组织来自 <a href="https://discuss.streamlit.io/t/using-pyinstaller-or-similar-to-create-an-executable/902/18"> Streamlit 论坛上 hmasdev 的解决方案</a></pre>
